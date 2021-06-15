@@ -7,8 +7,8 @@ import magwer.dolphin.api.RenderedScene
 import magwer.dolphin.game.sceneobject.GameObject
 import magwer.dolphin.game.room.RoomGrid
 import magwer.dolphin.game.room.RoomModel
-import magwer.dolphin.game.sceneobject.RoomFloorObject
 import magwer.dolphin.game.sceneobject.RoomStaticObject
+import magwer.dolphin.game.sceneobject.RoomFloorObject
 import magwer.dolphin.graphics.OpenGLView
 import magwer.dolphin.physics.Collider
 import magwer.dolphin.physics.CollisionRule
@@ -52,6 +52,10 @@ class GameScene(val game: Game) : RenderedScene,
 
     init {
         game.internal_addScene(this)
+        collisionRule.setRule(CollisionRule.PLAYER_CHANNEL, CollisionRule.STATIC_CHANNEL, CollisionRule.Rule.BLOCK)
+        collisionRule.setRule(CollisionRule.PLAYER_CHANNEL, CollisionRule.PHYSICAL_CHANNEL, CollisionRule.Rule.BLOCK)
+        collisionRule.setRule(CollisionRule.PLAYER_CHANNEL, CollisionRule.SPIRIT_CHANNEL, CollisionRule.Rule.OVERLAP)
+        collisionRule.setRule(CollisionRule.PLAYER_CHANNEL, CollisionRule.VISION_CHANNEL, CollisionRule.Rule.OVERLAP)
     }
 
     private fun onTick(deltaTime: Long) {

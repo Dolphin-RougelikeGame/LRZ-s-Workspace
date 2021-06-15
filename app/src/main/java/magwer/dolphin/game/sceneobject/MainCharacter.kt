@@ -7,6 +7,7 @@ import magwer.dolphin.game.Accelerator
 import magwer.dolphin.game.GameScene
 import magwer.dolphin.game.room.RoomGrid
 import magwer.dolphin.physics.Collider
+import magwer.dolphin.physics.CollisionRule
 import magwer.dolphin.physics.RectangleBox
 import magwer.dolphin.ui.JoyStickControlTouchListener
 
@@ -14,7 +15,7 @@ class MainCharacter(scene: GameScene, private val controller: JoyStickControlTou
     Character<RectangleBox>(scene, 0.0, 0.0, 1.0, 1.0, "texture/dolphin-idle/dolphin-idle-1.png") {
 
     override val collider =
-        Collider(this, scene, RectangleBox(x - width * 0.5, y - height * 0.5, width, height), 0)
+        Collider(this, scene, RectangleBox(x - width * 0.5, y - height * 0.5, width, height), CollisionRule.PLAYER_CHANNEL)
 
     private val moveAccX = Accelerator(-0.2, 0.2, 0.1)
     private val moveAccY = Accelerator(-0.2, 0.2, 0.1)
@@ -22,7 +23,7 @@ class MainCharacter(scene: GameScene, private val controller: JoyStickControlTou
     override fun addToScene() {
         super.addToScene()
         scene.animationManager.startAnimation(glShape.texture, Animation(
-            1500L,
+            900L,
             true,
             loadBitmapAsset(scene.context, "texture/dolphin-idle/dolphin-idle-1.png"),
             loadBitmapAsset(scene.context, "texture/dolphin-idle/dolphin-idle-2.png")

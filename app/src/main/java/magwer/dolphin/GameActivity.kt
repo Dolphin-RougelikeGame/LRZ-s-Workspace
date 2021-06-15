@@ -29,7 +29,7 @@ class GameActivity : Activity() {
                 game.soundManager,
                 "airbattlecombat/",
                 1.0,
-                9,
+                1,
                 10092,
                 4536,
                 2338,

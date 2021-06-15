@@ -56,11 +56,13 @@ abstract class Character<T : CollisionBox>(
             val len = sqrt(vecx * vecx + vecy * vecy)
             val nx = vecx / len
             val ny = vecy / len
-            targetx += nx / len
-            targety *= ny / len
+            targetx += nx * 0.1
+            targety += ny * 0.1
         }
-        if (blocks.isNotEmpty() && times < 5)
+        if (blocks.isNotEmpty() && times < 9) {
             moveTo(targetx, targety, times + 1)
+            return
+        }
         this.x = targetx
         this.y = targety
         updateLoc()

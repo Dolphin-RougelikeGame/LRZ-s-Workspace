@@ -3,6 +3,8 @@ package magwer.dolphin.game
 import android.app.Activity
 import magwer.dolphin.R
 import magwer.dolphin.game.sceneobject.MainCharacter
+import magwer.dolphin.game.sceneobject.RoomFloorObject
+import magwer.dolphin.game.sceneobject.RoomStaticObject
 import magwer.dolphin.graphics.OpenGLView
 import magwer.dolphin.sound.SoundManager
 import magwer.dolphin.ui.JoyStickControlTouchListener
@@ -35,18 +37,19 @@ class Game(
     }
 
     fun loadDone() {
-
         val initialScene = GameScene(this)
         MainCharacter(
             initialScene,
             leftcontroller
         ).addToScene()
+        RoomStaticObject(initialScene, 2, 2, 1, 1, "texture/wall.png").addToScene()
+        RoomStaticObject(initialScene, 2, 3, 1, 1, "texture/wall.png").addToScene()
         TempBoxCharacter(initialScene, 0, 0).addToScene()
         TempBoxCharacter(initialScene, 0, 1).addToScene()
         TempBoxCharacter(initialScene, 1, 1).addToScene()
         TempBoxCharacter(initialScene, 1, 2).addToScene()
         initialScene.startTicking()
-        openGLView.renderer.viewPort.scale = 0.5f
+        openGLView.renderer.viewPort.scale = 1.5f
     }
 
     fun shutdown() {
