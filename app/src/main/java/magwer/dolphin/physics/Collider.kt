@@ -1,7 +1,7 @@
 package magwer.dolphin.physics
 
 import magwer.dolphin.api.CollisionScene
-import magwer.dolphin.game.`object`.GameObject
+import magwer.dolphin.game.sceneobject.GameObject
 
 class Collider<T: CollisionBox>(val owner: GameObject, var scene: CollisionScene, var box: T, val channel: Int) {
 

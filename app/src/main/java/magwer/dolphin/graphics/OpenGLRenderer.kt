@@ -30,6 +30,7 @@ class OpenGLRenderer(private val view: OpenGLView) : GLSurfaceView.Renderer {
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
         view.shaderProgram
+        view.onLoaded()
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {

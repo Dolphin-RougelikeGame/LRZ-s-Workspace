@@ -1,4 +1,4 @@
-package magwer.dolphin.game.`object`
+package magwer.dolphin.game.sceneobject
 
 import magwer.dolphin.api.Coord
 import magwer.dolphin.game.GameScene
@@ -7,7 +7,7 @@ import magwer.dolphin.physics.Collider
 import magwer.dolphin.physics.CollisionRule
 import magwer.dolphin.physics.RectangleBox
 
-class RoomStaticObject(
+class RoomStaticWallObject(
     scene: GameScene,
     val x: Int,
     val y: Int,
@@ -25,11 +25,13 @@ class RoomStaticObject(
     override fun addToScene() {
         super.addToScene()
         collider.addToScene()
+        scene.roomGrid.updateSlot(this, collider)
     }
 
     override fun removeFromScene() {
         super.removeFromScene()
         collider.removeFromScene()
+        scene.roomGrid.remove(collider)
     }
 
     override fun onTick(deltaTime: Long) {

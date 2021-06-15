@@ -4,17 +4,15 @@ import magwer.dolphin.api.Coord
 import magwer.dolphin.api.adjacents
 import magwer.dolphin.api.conners
 import magwer.dolphin.api.distanceSquared
-import magwer.dolphin.game.`object`.GameObject
+import magwer.dolphin.game.sceneobject.GameObject
 import magwer.dolphin.physics.Collider
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
 class RoomGrid(
-    val startX: Int,
-    val startY: Int,
-    val width: Int,
-    val height: Int
+    private val startX: Int,
+    private val startY: Int
 ) {
 
     class PathNode(val coord: Coord, val before: PathNode?, cost: Int) {
@@ -24,7 +22,7 @@ class RoomGrid(
     }
 
     inner class PathFinder(
-        private val origin: Coord,
+        val origin: Coord,
         private val collider: Collider<*>,
         private var target: GameObject,
         private val targetRadius: Double
@@ -38,6 +36,8 @@ class RoomGrid(
 
         val done
             get() = result != null
+        val failed
+            get() = timeComputed > MAX_PATHFINDER_COMPUTE && result == null
 
         init {
             queue.add(
@@ -136,9 +136,11 @@ class RoomGrid(
     private val slotMap = HashMap<Coord, ArrayList<Collider<*>>>()
 
     fun gameToRoom(x: Double, y: Double): Pair<Int, Int> {
-        val x = (x - startX).toInt()
-        val y = (y - startY).toInt()
-        return x to y
+        return (x - startX).toInt() to (y - startY).toInt()
+    }
+
+    fun getColliders(slot: Coord): ArrayList<Collider<*>>? {
+        return slotMap[slot]
     }
 
     fun updateSlot(obj: GameObject, collider: Collider<*>) {
@@ -150,6 +152,12 @@ class RoomGrid(
         for (slot in coords)
             slotMap.getOrPut(slot, { ArrayList() }).add(collider)
         objectMap[collider] = coords
+    }
+
+    fun remove(collider: Collider<*>) {
+        val coords = objectMap.remove(collider)?: return
+        for (c in coords)
+            slotMap[c]?.remove(collider)
     }
 
     fun findPath(

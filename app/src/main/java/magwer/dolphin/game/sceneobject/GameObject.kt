@@ -1,4 +1,4 @@
-package magwer.dolphin.game.`object`
+package magwer.dolphin.game.sceneobject
 
 import magwer.dolphin.api.Coord
 import magwer.dolphin.game.GameScene

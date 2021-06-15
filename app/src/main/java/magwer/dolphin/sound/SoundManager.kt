@@ -23,7 +23,10 @@ class SoundManager(val game: Game) {
     init {
         soundPool.setOnLoadCompleteListener { soundPool, sampleId, status ->
             soundsToLoad.remove(sampleId)
-            println("Load Complete: $sampleId")
+            game.loadTask.musicProcess = 1.0 / (soundsToLoad.size + 1)
+            if (soundsToLoad.isEmpty())
+                game.loadTask.musicDone = true
+            game.loadTask.update()
         }
     }
 

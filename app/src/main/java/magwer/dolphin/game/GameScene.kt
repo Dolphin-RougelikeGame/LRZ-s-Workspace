@@ -4,7 +4,8 @@ import magwer.dolphin.animation.AnimationManager
 import magwer.dolphin.api.CollisionScene
 import magwer.dolphin.api.RenderedObject
 import magwer.dolphin.api.RenderedScene
-import magwer.dolphin.game.`object`.GameObject
+import magwer.dolphin.game.sceneobject.GameObject
+import magwer.dolphin.game.room.RoomGrid
 import magwer.dolphin.graphics.OpenGLView
 import magwer.dolphin.physics.Collider
 import magwer.dolphin.physics.CollisionRule
@@ -16,10 +17,12 @@ class GameScene(val game: Game) : RenderedScene,
     override val collisionObjects = HashMap<Int, ArrayList<Collider<*>>>()
     override val collisionRule = CollisionRule()
     override val view: OpenGLView
-        get() = game.view
+        get() = game.openGLView
 
     private val gameObjects = ArrayList<GameObject>()
+    val roomGrid = RoomGrid(0, 0)
     val animationManager = AnimationManager()
+
     var paused = false
         set(value) {
             if (field == value)

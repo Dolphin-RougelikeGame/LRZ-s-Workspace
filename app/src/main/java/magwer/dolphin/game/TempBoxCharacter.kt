@@ -3,7 +3,7 @@ package magwer.dolphin.game
 import magwer.dolphin.animation.BitmapHolder
 import magwer.dolphin.api.RenderedObject
 import magwer.dolphin.api.loadBitmapAsset
-import magwer.dolphin.game.`object`.GameObject
+import magwer.dolphin.game.sceneobject.GameObject
 import magwer.dolphin.graphics.GLSquare
 
 class TempBoxCharacter(scene: GameScene, val x: Int, val y: Int) :
