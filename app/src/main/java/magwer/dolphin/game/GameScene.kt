@@ -6,6 +6,9 @@ import magwer.dolphin.api.RenderedObject
 import magwer.dolphin.api.RenderedScene
 import magwer.dolphin.game.sceneobject.GameObject
 import magwer.dolphin.game.room.RoomGrid
+import magwer.dolphin.game.room.RoomModel
+import magwer.dolphin.game.sceneobject.RoomFloorObject
+import magwer.dolphin.game.sceneobject.RoomStaticObject
 import magwer.dolphin.graphics.OpenGLView
 import magwer.dolphin.physics.Collider
 import magwer.dolphin.physics.CollisionRule
@@ -78,6 +81,20 @@ class GameScene(val game: Game) : RenderedScene,
         }
     }
 
+    fun applyRoomModel(roomModel: RoomModel) {
+        for (x in 0 until roomModel.width)
+            for (y in 0 until roomModel.height) {
+                when (roomModel.matrix[x][y]) {
+                    RoomModel.SlotType.WALL -> {
+                        RoomStaticObject(this, x, y, 1, 1, "texture/wall.png").addToScene()
+                    }
+                    RoomModel.SlotType.INSIDE -> {
+                        RoomFloorObject(this, x, y, 1, 1, "texture/sea.png").addToScene()
+                    }
+                }
+            }
+    }
+
     fun startTicking() {
         var lastTick = System.currentTimeMillis()
         game.sceneTimer.scheduleAtFixedRate(timerTask {
@@ -92,8 +109,8 @@ class GameScene(val game: Game) : RenderedScene,
     fun shutdown() {
         synchronized(gameObjects) {
             for (obj in gameObjects)
-            if (obj is RenderedObject)
-                view.renderer.removeShape(obj.glShape)
+                if (obj is RenderedObject)
+                    view.renderer.removeShape(obj.glShape)
         }
         game.sceneTimer.cancel()
         animationManager.shutdown()
