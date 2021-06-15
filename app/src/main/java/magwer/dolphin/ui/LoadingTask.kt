@@ -25,7 +25,6 @@ class LoadingTask(
         bar.progress = (p * 100).roundToInt()
         if (openglDone && musicDone)
             loadDone()
-        println(233)
     }
 
     fun loadDone() {
