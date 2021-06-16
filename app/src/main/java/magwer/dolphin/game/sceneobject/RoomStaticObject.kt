@@ -11,7 +11,7 @@ import magwer.dolphin.physics.Collider
 import magwer.dolphin.physics.CollisionRule
 import magwer.dolphin.physics.RectangleBox
 
-class RoomStaticObject(
+open class RoomStaticObject(
     scene: GameScene,
     val x: Int,
     val y: Int,
@@ -29,7 +29,7 @@ class RoomStaticObject(
         gameToScreen(height.toDouble())
     )
 
-    val collider = Collider(
+    open val collider = Collider(
         this,
         scene,
         RectangleBox(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble()),

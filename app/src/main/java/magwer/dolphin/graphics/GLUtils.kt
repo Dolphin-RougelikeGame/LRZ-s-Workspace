@@ -7,6 +7,14 @@ import magwer.dolphin.api.loadStringAsset
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
+import kotlin.math.sqrt
+
+fun getAngle(dx: Double, dy: Double): Pair<Double, Double> {
+    if (dx == 0.0 && dy == 0.0)
+        return 0.0 to 1.0
+    val len = sqrt(dx * dx + dy * dy)
+    return dx / len to -dy / len
+}
 
 fun createShaderProgram(context: Context, vertexShaderFile: String, fragmentShaderFile: String): Int {
     val vsc = loadStringAsset(context, vertexShaderFile).join()

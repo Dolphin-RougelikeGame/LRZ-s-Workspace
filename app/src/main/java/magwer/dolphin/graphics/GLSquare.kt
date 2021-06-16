@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.opengl.GLES20
 import android.opengl.GLUtils
 import magwer.dolphin.animation.BitmapHolder
+import kotlin.math.cos
+import kotlin.math.sin
 
 class GLSquare(
     private val shaderProgram: Int,
@@ -11,31 +13,51 @@ class GLSquare(
     var screenX: Float,
     var screenY: Float,
     var screenWidth: Float,
-    var screenHeight: Float
+    var screenHeight: Float,
+    var tintColor: FloatArray = floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f)
 ) : GLShape {
+
+    var rotationSin = 0.0f
+    var rotationCos = 1.0f
 
     private var initialized = false
     private var ratio = 1.0f
     private val vertexBuffer = FloatBuffer(getCoords())
     private val textureBuffer = FloatBuffer(textureData)
+    private val rotationBuffer = FloatBuffer(getRotation())
     private var vertexHandle = 0
     private var texturePosHandle = 0
+    private var offsetHandle = 0
     private var viewportHandle = 0
+    private var ratioHandle = 0
+    private var rotationHandle = 0
+    private var tintColorHandle = 0
     private var textureId = 0
     private var oldBitmap: Bitmap? = null
 
     private fun getCoords(): FloatArray {
+        val w = screenWidth * 0.5f
+        val h = screenHeight * 0.5f
         return floatArrayOf(
-            screenX, (screenY + screenHeight) * ratio,  // top left
-            screenX, screenY * ratio,  // bottom left
-            screenX + screenWidth, (screenY + screenHeight) * ratio, // top right
-            screenX + screenWidth, screenY * ratio  // bottom right
+            -w, h,  // top left
+            -w, -h,  // bottom left
+            w, h, // top right
+            w, -h  // bottom right
         )
+    }
+
+    private fun getRotation(): FloatArray {
+        return floatArrayOf(rotationCos, -rotationSin, rotationSin, rotationCos)
     }
 
     fun updateCoords() {
         vertexBuffer.put(getCoords())
         vertexBuffer.position(0)
+    }
+
+    fun updateRotation() {
+        rotationBuffer.put(getRotation())
+        rotationBuffer.position(0)
     }
 
     override fun onRatioChange(ratio: Float) {
@@ -48,7 +70,11 @@ class GLSquare(
             initialized = true
             vertexHandle = GLES20.glGetAttribLocation(shaderProgram, "av_Position")
             texturePosHandle = GLES20.glGetAttribLocation(shaderProgram, "af_Position")
+            offsetHandle = GLES20.glGetUniformLocation(shaderProgram, "av_Offset")
             viewportHandle = GLES20.glGetUniformLocation(shaderProgram, "viewport")
+            ratioHandle = GLES20.glGetUniformLocation(shaderProgram, "ratio")
+            rotationHandle = GLES20.glGetUniformLocation(shaderProgram, "rotationMatrix")
+            tintColorHandle = GLES20.glGetUniformLocation(shaderProgram, "tintColor")
             textureId = run {
                 val textures = intArrayOf(0)
                 GLES20.glGenTextures(1, textures, 0)
@@ -56,10 +82,26 @@ class GLSquare(
                 if (id == 0)
                     return@run id
                 GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, id)
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT)
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT)
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR)
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
+                GLES20.glTexParameteri(
+                    GLES20.GL_TEXTURE_2D,
+                    GLES20.GL_TEXTURE_WRAP_S,
+                    GLES20.GL_REPEAT
+                )
+                GLES20.glTexParameteri(
+                    GLES20.GL_TEXTURE_2D,
+                    GLES20.GL_TEXTURE_WRAP_T,
+                    GLES20.GL_REPEAT
+                )
+                GLES20.glTexParameteri(
+                    GLES20.GL_TEXTURE_2D,
+                    GLES20.GL_TEXTURE_MIN_FILTER,
+                    GLES20.GL_LINEAR
+                )
+                GLES20.glTexParameteri(
+                    GLES20.GL_TEXTURE_2D,
+                    GLES20.GL_TEXTURE_MAG_FILTER,
+                    GLES20.GL_LINEAR
+                )
                 GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, texture.bitmap, 0)
                 id
             }
@@ -88,7 +130,11 @@ class GLSquare(
             false, VERTEX_STRIDE, textureBuffer
         )
 
-        GLES20.glUniform3f(viewportHandle, viewPort.transX, viewPort.transY, viewPort.scale)
+        GLES20.glUniform2f(offsetHandle, screenX + screenWidth * 0.5f, screenY + screenHeight * 0.5f)
+        GLES20.glUniform1f(ratioHandle, ratio)
+        GLES20.glUniform3f(viewportHandle, viewPort.transX, viewPort.transY * ratio, viewPort.scale)
+        GLES20.glUniformMatrix2fv(rotationHandle, 1, false, rotationBuffer)
+        GLES20.glUniform4f(tintColorHandle, tintColor[0], tintColor[1], tintColor[2], tintColor[3])
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, VERTICES)
 

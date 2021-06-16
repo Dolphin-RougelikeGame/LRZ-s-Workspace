@@ -9,7 +9,8 @@ import javax.microedition.khronos.opengles.GL10
 class OpenGLRenderer(private val view: OpenGLView) : GLSurfaceView.Renderer {
 
     private val shapes = ArrayList<GLShape>()
-    private var ratio = 1.0f
+    var ratio = 1.0f
+        private set
     val viewPort = OpenGLViewport()
 
     fun addShape(shape: GLShape) {
@@ -28,6 +29,8 @@ class OpenGLRenderer(private val view: OpenGLView) : GLSurfaceView.Renderer {
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
+        GLES20.glEnable(GLES20.GL_BLEND)
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
         view.shaderProgram
         view.onLoaded()

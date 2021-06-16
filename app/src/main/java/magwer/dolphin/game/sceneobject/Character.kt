@@ -3,6 +3,7 @@ package magwer.dolphin.game.sceneobject
 import magwer.dolphin.animation.Animation
 import magwer.dolphin.animation.BitmapHolder
 import magwer.dolphin.api.Coord
+import magwer.dolphin.api.Damageable
 import magwer.dolphin.api.RenderedObject
 import magwer.dolphin.api.loadBitmapAsset
 import magwer.dolphin.game.GameScene
@@ -20,17 +21,18 @@ abstract class Character<T : CollisionBox>(
     var y: Double,
     val width: Double,
     val height: Double,
-    texture: String
+    protected val texture: String,
+    private val modelWidthScale: Double
 ) : GameObject(scene),
-    RenderedObject {
+    RenderedObject, Damageable {
 
     override val glShape = GLSquare(
         scene.view.shaderProgram,
         BitmapHolder(loadBitmapAsset(scene.context, texture)),
-        gameToScreen(x - width * 0.5),
-        gameToScreen(y - height * 0.5),
-        gameToScreen(width),
-        gameToScreen(height)
+        gameToScreen(x - modelWidthScale * width * 0.5),
+        gameToScreen(y - modelWidthScale * height * 0.5),
+        gameToScreen(modelWidthScale * width),
+        gameToScreen(modelWidthScale * height)
     )
 
     abstract val collider: Collider<T>
@@ -56,8 +58,8 @@ abstract class Character<T : CollisionBox>(
             val len = sqrt(vecx * vecx + vecy * vecy)
             val nx = vecx / len
             val ny = vecy / len
-            targetx += nx * 0.1
-            targety += ny * 0.1
+            targetx += nx * 0.05
+            targety += ny * 0.05
         }
         if (blocks.isNotEmpty() && times < 9) {
             moveTo(targetx, targety, times + 1)
@@ -72,9 +74,8 @@ abstract class Character<T : CollisionBox>(
         synchronized(collider.box) {
             collider.box = copyCollision(x, y)
         }
-        glShape.screenX = gameToScreen(x - width * 0.5)
-        glShape.screenY = gameToScreen(y - height * 0.5)
-        glShape.updateCoords()
+        glShape.screenX = gameToScreen(x - modelWidthScale * width * 0.5)
+        glShape.screenY = gameToScreen(y - modelWidthScale * height * 0.5)
         scene.roomGrid.updateSlot(this, collider)
     }
 

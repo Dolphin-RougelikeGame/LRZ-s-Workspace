@@ -58,7 +58,10 @@ fun loadBitmapAsset(context: Context, fileName: String): Bitmap {
     } catch (e: IOException) {
         e.printStackTrace()
     } finally {
-        val image = BitmapFactory.decodeStream(ins)
+        val image = BitmapFactory.decodeStream(ins, null, BitmapFactory.Options().also {
+            it.outConfig = Bitmap.Config.ARGB_8888
+        })
+        image!!.setHasAlpha(true)
         ins?.close()
         return image
     }

@@ -32,12 +32,12 @@ class RoomGrid(
         private val queue = ArrayList<PathNode>()
         private val pathMap = HashMap<Coord, PathNode>()
         private var result: PathNode? = null
-        private var timeComputed = 0
+        var timeComputed = 0
 
         val done
             get() = result != null
         val failed
-            get() = timeComputed > MAX_PATHFINDER_COMPUTE && result == null
+            get() = (timeComputed > MAX_PATHFINDER_COMPUTE || queue.isEmpty()) && result == null
 
         init {
             queue.add(
@@ -73,6 +73,7 @@ class RoomGrid(
         private fun compute(): Boolean {
             if (timeComputed > MAX_PATHFINDER_COMPUTE)
                 return false
+            timeComputed++
             if (queue.isEmpty())
                 return false
             val targetcs = target.getRoomCoords(this@RoomGrid)!!
@@ -90,8 +91,7 @@ class RoomGrid(
             for ((i, c) in adjs.withIndex()) {
                 val objs = slotMap[c]
                 if (objs == null || objs.all { !rule.blocksWith(it.channel, collider.channel) }) {
-                    val next =
-                        PathNode(c, top, 10)
+                    val next = PathNode(c, top, 10)
                     if (targetcs.any { c.distanceSquared(it) <= targetRadius }) {
                         result = next
                         return false
@@ -126,7 +126,6 @@ class RoomGrid(
                     }
                 }
             }
-            timeComputed++
             return true
         }
 

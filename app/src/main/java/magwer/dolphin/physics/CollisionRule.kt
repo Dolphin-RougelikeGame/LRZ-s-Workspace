@@ -40,6 +40,7 @@ class CollisionRule {
         const val PHYSICAL_CHANNEL = 3
         const val SPIRIT_CHANNEL = 4
         const val VISION_CHANNEL = 5
+        const val INTERACT_CHANNEL = 6
 
     }
 

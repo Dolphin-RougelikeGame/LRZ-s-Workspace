@@ -2,6 +2,8 @@ package magwer.dolphin.game
 
 import android.app.Activity
 import magwer.dolphin.R
+import magwer.dolphin.game.room.FightingDelegage
+import magwer.dolphin.game.sceneobject.FishCharacter
 import magwer.dolphin.game.sceneobject.MainCharacter
 import magwer.dolphin.game.sceneobject.RoomFloorObject
 import magwer.dolphin.game.sceneobject.RoomStaticObject
@@ -12,13 +14,14 @@ import magwer.dolphin.ui.LoadingTask
 import java.util.*
 
 class Game(
-    activity: Activity,
+    val activity: Activity,
     private val leftcontroller: JoyStickControlTouchListener
 ) {
 
-    private val scenes = ArrayList<GameScene>()
+    val scenes = ArrayList<GameScene>()
     val openGLView = activity.findViewById<OpenGLView>(R.id.openGLView)
     val soundManager = SoundManager(this)
+    val chapterModel = FightingDelegage().generate()
     val sceneTimer = Timer()
     val loadTask = LoadingTask(this, activity.findViewById(R.id.progress_background))
 
@@ -37,18 +40,25 @@ class Game(
     }
 
     fun loadDone() {
-        val initialScene = GameScene(this)
+        val scenes = HashMap<Int, GameScene>()
+        for ((i, room) in chapterModel.rooms) {
+            val scene = GameScene(this)
+            scenes[i] = scene
+            scene.applyRoomModel(room)
+            scene.paused = true
+        }
+        val initScene = scenes[0]!!
+        initScene.applyRoomModel(chapterModel.rooms[0]!!)
+        initScene.paused = false
         MainCharacter(
-            initialScene,
-            leftcontroller
+            initScene,
+            activity.findViewById(R.id.health_bar),
+            leftcontroller,
+            27 * 0.5 + 0.5,
+            15 * 0.5 + 0.5
         ).addToScene()
-        RoomStaticObject(initialScene, 2, 2, 1, 1, "texture/wall.png").addToScene()
-        RoomStaticObject(initialScene, 2, 3, 1, 1, "texture/wall.png").addToScene()
-        TempBoxCharacter(initialScene, 0, 0).addToScene()
-        TempBoxCharacter(initialScene, 0, 1).addToScene()
-        TempBoxCharacter(initialScene, 1, 1).addToScene()
-        TempBoxCharacter(initialScene, 1, 2).addToScene()
-        initialScene.startTicking()
+        FishCharacter(initScene, 27 * 0.5 + 4.5, 15 * 0.5 + 3.5).addToScene()
+        initScene.startTicking()
         openGLView.renderer.viewPort.scale = 1.5f
     }
 

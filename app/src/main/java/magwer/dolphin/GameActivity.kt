@@ -16,7 +16,7 @@ class GameActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_game)
 
         val leftcontrol = findViewById<FrameLayout>(R.id.left_control)
         val leftcontrolcenter = findViewById<ImageView>(R.id.left_control_center)

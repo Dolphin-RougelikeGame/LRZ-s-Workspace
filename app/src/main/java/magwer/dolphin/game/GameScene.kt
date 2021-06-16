@@ -7,6 +7,7 @@ import magwer.dolphin.api.RenderedScene
 import magwer.dolphin.game.sceneobject.GameObject
 import magwer.dolphin.game.room.RoomGrid
 import magwer.dolphin.game.room.RoomModel
+import magwer.dolphin.game.room.RoomRemodel
 import magwer.dolphin.game.sceneobject.RoomStaticObject
 import magwer.dolphin.game.sceneobject.RoomFloorObject
 import magwer.dolphin.graphics.OpenGLView
@@ -22,6 +23,7 @@ class GameScene(val game: Game) : RenderedScene,
     override val view: OpenGLView
         get() = game.openGLView
 
+    lateinit var roomModel: RoomModel
     private val gameObjects = ArrayList<GameObject>()
     val roomGrid = RoomGrid(0, 0)
     val animationManager = AnimationManager()
@@ -56,6 +58,8 @@ class GameScene(val game: Game) : RenderedScene,
         collisionRule.setRule(CollisionRule.PLAYER_CHANNEL, CollisionRule.PHYSICAL_CHANNEL, CollisionRule.Rule.BLOCK)
         collisionRule.setRule(CollisionRule.PLAYER_CHANNEL, CollisionRule.SPIRIT_CHANNEL, CollisionRule.Rule.OVERLAP)
         collisionRule.setRule(CollisionRule.PLAYER_CHANNEL, CollisionRule.VISION_CHANNEL, CollisionRule.Rule.OVERLAP)
+        collisionRule.setRule(CollisionRule.PLAYER_CHANNEL, CollisionRule.INTERACT_CHANNEL, CollisionRule.Rule.OVERLAP)
+        collisionRule.setRule(CollisionRule.STATIC_CHANNEL, CollisionRule.PHYSICAL_CHANNEL, CollisionRule.Rule.BLOCK)
     }
 
     private fun onTick(deltaTime: Long) {
@@ -86,14 +90,24 @@ class GameScene(val game: Game) : RenderedScene,
     }
 
     fun applyRoomModel(roomModel: RoomModel) {
+        this.roomModel = roomModel
         for (x in 0 until roomModel.width)
             for (y in 0 until roomModel.height) {
                 when (roomModel.matrix[x][y]) {
-                    RoomModel.SlotType.WALL -> {
+                    RoomRemodel.SlotType.WALL -> {
                         RoomStaticObject(this, x, y, 1, 1, "texture/wall.png").addToScene()
                     }
-                    RoomModel.SlotType.INSIDE -> {
+                    RoomRemodel.SlotType.FLOOR -> {
                         RoomFloorObject(this, x, y, 1, 1, "texture/sea.png").addToScene()
+                    }
+                    RoomRemodel.SlotType.TREASURE -> {
+
+                    }
+                    RoomRemodel.SlotType.BAR -> {
+                        RoomStaticObject(this, x, y, 1, 1, "texture/bar.png").addToScene()
+                    }
+                    RoomRemodel.SlotType.PORTAL -> {
+
                     }
                 }
             }
