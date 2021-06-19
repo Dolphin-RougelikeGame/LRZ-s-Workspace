@@ -27,7 +27,7 @@ class MainBulletObject(
             CollisionRule.PLAYER_CHANNEL
         )
     private var angle = getAngle(controller.strengthX, controller.strengthY)
-    private fun launch(deltaTime: Long) {
+    private fun launch() {
         move(angle.first, angle.second)
         updateLoc()
     }
@@ -56,7 +56,10 @@ class MainBulletObject(
     }
 
     override fun onTick(deltaTime: Long) {
-        launch(deltaTime)
+        launch()
+        if (this.collider.checkCollision().first.isNotEmpty()) {
+            this.removeFromScene()
+        }
         glShape.tintColor = floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f)
     }
 
